@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const {auth, requiresAuth} = require("express-openid-connect");
+const {auth} = require("express-openid-connect");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const {
@@ -30,15 +30,33 @@ app.use(JWTAuthenticationCheck);
 
 app.get("/", (req, res) => {
 	if (req.oidc.isAuthenticated()) {
-		res.redirect(process.env.FRONT_END_URL);
+		res.redirect(process.env.FRONT_END_URL + "/mysnippets");
 	}
 	res.send("Logged out");
 });
 
+app.get("/register", (req, res) => {
+	res.oidc.login({
+		authorizationParams: {
+			screen_hint: "signup",
+		},
+	});
+});
+
 app.get("/isAuthenticated", (req, res) => {
-	res.send(req.oidc.isAuthenticated() ? "logged_in" : "logged_out");
+	res.json(
+		req.oidc.isAuthenticated()
+			? {isAuthenticated: true}
+			: {isAuthenticated: false}
+	);
+});
+
+app.use((error, req, res, next) => {
+	console.error("SERVER ERROR: ", error);
+	if (res.statusCode < 400) res.status(500);
+	res.send({error: error.message, name: error.name, message: error.message});
 });
 
 app.listen(PORT, () => {
-	console.log(`Cupcakes are ready at http://localhost:${PORT}`);
+	console.log(`Snippets are ready at port: ${PORT}`);
 });
