@@ -1,4 +1,5 @@
 const {User} = require("../db");
+const jwt = require("jsonwebtoken");
 
 const oAuthAuthourizationCheck = async (req, res, next) => {
 	try {
@@ -21,7 +22,9 @@ const oAuthAuthourizationCheck = async (req, res, next) => {
 };
 
 const JWTAuthenticationCheck = async (req, res, next) => {
+	console.log("authHeader");
 	const authHeader = req.header("Authorization");
+	console.log(authHeader);
 	if (!authHeader) {
 		next();
 	} else {

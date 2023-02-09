@@ -1,13 +1,15 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const {auth} = require("express-openid-connect");
+const {auth, requiresAuth} = require("express-openid-connect");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const {
 	oAuthAuthourizationCheck,
 	JWTAuthenticationCheck,
 } = require("../middleware");
+const {User} = require("../db");
+const path = require("path");
 
 const PORT = process.env.PORT || 5002;
 
@@ -28,14 +30,29 @@ app.use(auth(config));
 app.use(oAuthAuthourizationCheck);
 app.use(JWTAuthenticationCheck);
 
-app.get("/", (req, res) => {
+app.get("/", async (req, res, next) => {
 	if (req.oidc.isAuthenticated()) {
-		res.redirect(process.env.FRONT_END_URL + "/mysnippets");
+		try {
+			const token = jwt.sign(req.oidc.user, process.env.JWT_SECRET, {
+				expiresIn: "1w",
+			});
+			res.redirect(`${process.env.FRONT_END_URL}/mysnippets/?t=${token}`);
+		} catch (error) {
+			console.log(error);
+			next(error);
+		}
+	} else {
+		res.send("Logged out");
 	}
-	res.send("Logged out");
 });
 
-app.get("/register", (req, res) => {
+app.get("/logout-direct", (req, res) => {
+	res.redirect(
+		`${process.env.ISSUERBASEURL}/v2/logout?client_id=${process.env.CLIENTID}&returnTo=http://localhost:3000/`
+	);
+});
+
+app.get("/register", (req, res, next) => {
 	res.oidc.login({
 		authorizationParams: {
 			screen_hint: "signup",
@@ -43,12 +60,22 @@ app.get("/register", (req, res) => {
 	});
 });
 
-app.get("/isAuthenticated", (req, res) => {
-	res.json(
-		req.oidc.isAuthenticated()
-			? {isAuthenticated: true}
-			: {isAuthenticated: false}
-	);
+app.get("/isAuthenticated", (req, res, next) => {
+	res.json(req.user ? {isAuthenticated: true} : {isAuthenticated: false});
+});
+
+app.get("/me", requiresAuth(), async (req, res, next) => {
+	try {
+		const user = await User.findOne({
+			where: {username: req.oidc.user?.nickname},
+			raw: true,
+		});
+		const token = jwt.sign(user, process.env.JWT_SECRET, {expiresIn: "1w"});
+		res.json({token: token});
+	} catch (error) {
+		console.log(error);
+		next(error);
+	}
 });
 
 app.use((error, req, res, next) => {
