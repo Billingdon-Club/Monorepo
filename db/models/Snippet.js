@@ -24,9 +24,9 @@ Snippet.init(
 			defaultValue: "No Description",
 		},
 		tags: {
-			type: DataTypes.ARRAY,
+			type: DataTypes.STRING,
 			allowNull: true,
-			defaultValue: ["code"],
+			defaultValue: "code",
 		},
 	},
 	{
