@@ -34,9 +34,14 @@ app.use(JWTAuthenticationCheck);
 app.get("/", async (req, res, next) => {
 	if (req.oidc.isAuthenticated()) {
 		try {
-			const token = jwt.sign(req.oidc.user, process.env.JWT_SECRET, {
-				expiresIn: "1w",
+			const user = await User.findOne({
+				where: {username: req.oidc.user?.nickname},
+				raw: true,
 			});
+			const token = jwt.sign(
+				{username: req.oidc.user?.nickname},
+				process.env.JWT_SECRET
+			);
 			res.redirect(`${process.env.FRONT_END_URL}/mysnippets/?t=${token}`);
 		} catch (error) {
 			console.log(error);

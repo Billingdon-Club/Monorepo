@@ -1,6 +1,5 @@
 const {User} = require("../db");
 const jwt = require("jsonwebtoken");
-const CryptoJS = require("crypto-js");
 
 const oAuthAuthourizationCheck = async (req, res, next) => {
 	try {
@@ -11,6 +10,7 @@ const oAuthAuthourizationCheck = async (req, res, next) => {
 					username: req.oidc.user?.nickname,
 					email: req.oidc.user?.email,
 					name: req.oidc.user?.name,
+					role: "user",
 				},
 			});
 			console.log(user);
@@ -31,9 +31,13 @@ const JWTAuthenticationCheck = async (req, res, next) => {
 			next();
 		} else {
 			const token = authHeader.split(" ")[1];
-			const user = jwt.verify(token, process.env.JWT_SECRET);
+			const retrievedData = jwt.verify(token, process.env.JWT_SECRET);
+			const user = await User.findOne({
+				where: {username: retrievedData.username},
+				raw: true,
+			});
 			req.user = user;
-			console.log(user);
+			console.log(retrievedData, user);
 			next();
 		}
 	} catch (error) {
