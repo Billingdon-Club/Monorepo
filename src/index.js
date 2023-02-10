@@ -4,6 +4,7 @@ const app = express();
 const {auth, requiresAuth} = require("express-openid-connect");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
+const CryptoJS = require("crypto-js");
 const {
 	oAuthAuthourizationCheck,
 	JWTAuthenticationCheck,

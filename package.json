@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-
     "start": "nodemon src"
   },
   "repository": {
@@ -20,6 +19,7 @@
   "homepage": "https://github.com/JoshuaLaurence/snippysnips#readme",
   "dependencies": {
     "cors": "^2.8.5",
+    "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-openid-connect": "^2.12.0",

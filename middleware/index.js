@@ -1,5 +1,6 @@
 const {User} = require("../db");
 const jwt = require("jsonwebtoken");
+const CryptoJS = require("crypto-js");
 
 const oAuthAuthourizationCheck = async (req, res, next) => {
 	try {
@@ -22,17 +23,22 @@ const oAuthAuthourizationCheck = async (req, res, next) => {
 };
 
 const JWTAuthenticationCheck = async (req, res, next) => {
-	console.log("authHeader");
-	const authHeader = req.header("Authorization");
-	console.log(authHeader);
-	if (!authHeader) {
-		next();
-	} else {
-		const token = authHeader.split(" ")[1];
-		const user = jwt.verify(token, process.env.JWT_SECRET);
-		req.user = user;
-		console.log(user);
-		next();
+	try {
+		console.log("authHeader");
+		const authHeader = req.header("Authorization");
+		console.log(authHeader);
+		if (!authHeader) {
+			next();
+		} else {
+			const token = authHeader.split(" ")[1];
+			const user = jwt.verify(token, process.env.JWT_SECRET);
+			req.user = user;
+			console.log(user);
+			next();
+		}
+	} catch (error) {
+		console.log(error);
+		next(error);
 	}
 };
 
