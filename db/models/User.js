@@ -24,7 +24,15 @@ User.init(
 		},
 		password: {
 			type: DataTypes.STRING,
-			allowNull: false,
+			allowNull: true,
+		},
+		profilePic: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
+		role: {
+			type: DataTypes.ENUM("admin", "user"),
+			allowNull: true,
 		},
 	},
 	{
