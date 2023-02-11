@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "seed": "node db/seedFn.js",
     "start": "nodemon src"
   },
   "repository": {

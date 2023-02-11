@@ -26,6 +26,10 @@ User.init(
 			type: DataTypes.STRING,
 			allowNull: true,
 		},
+		profilePic: {
+			type: DataTypes.STRING,
+			allowNull: true,
+		},
 		role: {
 			type: DataTypes.ENUM("admin", "user"),
 			allowNull: true,

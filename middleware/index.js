@@ -10,6 +10,7 @@ const oAuthAuthourizationCheck = async (req, res, next) => {
 					username: req.oidc.user?.nickname,
 					email: req.oidc.user?.email,
 					name: req.oidc.user?.name,
+					profilePic: req.oidc.user?.picture,
 					role: "user",
 				},
 			});

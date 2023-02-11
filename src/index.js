@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const {auth, requiresAuth} = require("express-openid-connect");
+const {auth, requiresAuth, claimEquals} = require("express-openid-connect");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
@@ -52,6 +52,10 @@ app.get("/", async (req, res, next) => {
 	}
 });
 
+app.post("/callback", (req, res, next) => {
+	res.redirect("/");
+});
+
 app.get("/logout-direct", (req, res) => {
 	res.redirect(
 		`${process.env.ISSUERBASEURL}/v2/logout?client_id=${process.env.CLIENTID}&returnTo=http://localhost:3000/`
@@ -70,14 +74,20 @@ app.get("/isAuthenticated", (req, res, next) => {
 	res.json(req.user ? {isAuthenticated: true} : {isAuthenticated: false});
 });
 
-app.get("/me", requiresAuth(), async (req, res, next) => {
+app.get("/profile-pic", (req, res, next) => {
 	try {
-		const user = await User.findOne({
-			where: {username: req.oidc.user?.nickname},
-			raw: true,
-		});
-		const token = jwt.sign(user, process.env.JWT_SECRET, {expiresIn: "1w"});
-		res.json({token: token});
+		if (req.user) res.json({profilePic: req.user.profilePic});
+		else throw new Error("No user found");
+	} catch (error) {
+		console.log(error);
+		next(error);
+	}
+});
+
+app.get("/me", async (req, res, next) => {
+	try {
+		if (req.user) res.json({user: req.user});
+		else throw new Error("No user found");
 	} catch (error) {
 		console.log(error);
 		next(error);

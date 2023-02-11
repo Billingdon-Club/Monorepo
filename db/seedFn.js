@@ -11,6 +11,7 @@ async function seed() {
 			name: faker.name.fullName(),
 			email: faker.internet.email(),
 			password: faker.internet.password(),
+			profilePic: faker.internet.avatar(),
 			role: "user",
 		});
 	}
