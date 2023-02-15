@@ -1,5 +1,5 @@
 const db = require("./db");
-const {User} = require("./index");
+const {User, Snippet} = require("./index");
 const {faker} = require("@faker-js/faker");
 
 async function seed() {
@@ -13,6 +13,13 @@ async function seed() {
 			password: faker.internet.password(),
 			profilePic: faker.internet.avatar(),
 			role: "user",
+		});
+
+		await Snippet.create({
+			title: "Another code snippet",
+			content: `function add(a, b) {\n  return a + b;\n}`,
+			language: "js",
+			UserId: i + 1,
 		});
 	}
 

@@ -4,13 +4,12 @@ const app = express();
 const {auth, requiresAuth, claimEquals} = require("express-openid-connect");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
-const CryptoJS = require("crypto-js");
 const {
 	oAuthAuthourizationCheck,
 	JWTAuthenticationCheck,
 } = require("../middleware");
 const {User} = require("../db");
-const path = require("path");
+const snippets = require("../routes/snippets");
 
 const PORT = process.env.PORT || 5002;
 
@@ -30,6 +29,8 @@ app.use(auth(config));
 
 app.use(oAuthAuthourizationCheck);
 app.use(JWTAuthenticationCheck);
+
+app.use("/snippets", snippets);
 
 app.get("/", async (req, res, next) => {
 	if (req.oidc.isAuthenticated()) {
