@@ -17,7 +17,7 @@ snippets.post("/", async (req, res, next) => {
 				content,
 				language,
 			});
-			res.status(200).send({newSnippet: newSnippet});
+			res.status(200).send({success: true, newSnippet: newSnippet});
 		}
 	} catch (error) {
 		console.log(error);
@@ -29,8 +29,10 @@ snippets.delete("/:id", async (req, res, next) => {
 	try {
 		if (!req.user) throw new Error("No User Found");
 		else {
-			const deletedSnippet = await Snippet.destroy({where: {id: req.body.id}});
-			res.status(200).send({snippets: deletedSnippet});
+			const deletedSnippet = await Snippet.destroy({
+				where: {id: req.params.id, UserId: req.user.id},
+			});
+			res.status(200).send({success: true, snippet: deletedSnippet});
 		}
 	} catch (error) {
 		console.log(error);
