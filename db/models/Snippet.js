@@ -10,10 +10,6 @@ Snippet.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		title: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
 		language: {
 			type: DataTypes.STRING,
 			allowNull: false,
@@ -21,16 +17,6 @@ Snippet.init(
 		content: {
 			type: DataTypes.STRING,
 			allowNull: false,
-		},
-		description: {
-			type: DataTypes.STRING,
-			allowNull: true,
-			defaultValue: "No Description",
-		},
-		tags: {
-			type: DataTypes.STRING,
-			allowNull: true,
-			defaultValue: "code",
 		},
 	},
 	{

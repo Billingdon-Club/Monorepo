@@ -16,9 +16,8 @@ async function seed() {
 		});
 
 		await Snippet.create({
-			title: "Another code snippet",
 			content: `function add(a, b) {\n  return a + b;\n}`,
-			language: "js",
+			language: "javascript",
 			UserId: i + 1,
 		});
 	}
