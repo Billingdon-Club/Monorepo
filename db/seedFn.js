@@ -1,12 +1,13 @@
-const db = require("./db");
+const connection = require("./db");
 const {User, Snippet} = require("./index");
 const {faker} = require("@faker-js/faker");
 
 async function seed() {
-	await db.sync({force: true});
+	await User.deleteMany();
+	await Snippet.deleteMany();
 
 	for (let i = 0; i < 100; i++) {
-		await User.create({
+		const newUser = await User.create({
 			username: faker.internet.userName(),
 			name: faker.name.fullName(),
 			email: faker.internet.email(),
@@ -18,7 +19,8 @@ async function seed() {
 		await Snippet.create({
 			content: `function add(a, b) {\n  return a + b;\n}`,
 			language: "javascript",
-			UserId: i + 1,
+			createdAt: new Date(),
+			owner: newUser,
 		});
 	}
 

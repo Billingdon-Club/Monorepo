@@ -24,8 +24,9 @@ snippets.post("/", async (req, res, next) => {
 			const {content} = req.body;
 			const language = String(detectLang(content)).toLowerCase();
 			const newSnippet = await Snippet.create({
-				UserId: req.user.id,
+				owner: req.user,
 				content,
+				createdAt: new Date(),
 				language,
 			});
 			res.status(200).send({success: true, newSnippet: newSnippet});
@@ -40,8 +41,9 @@ snippets.delete("/:id", async (req, res, next) => {
 	try {
 		if (!req.user) throw new Error("No User Found");
 		else {
-			const deletedSnippet = await Snippet.destroy({
-				where: {id: req.params.id, UserId: req.user.id},
+			const deletedSnippet = await Snippet.deleteOne({
+				_id: req.params.id,
+				owner: req.user,
 			});
 			res.status(200).send({success: true, snippet: deletedSnippet});
 		}
@@ -55,10 +57,9 @@ snippets.get("/", async (req, res, next) => {
 	try {
 		if (!req.user) throw new Error("No User Found");
 		else {
-			const snippets = await Snippet.findAll({
-				where: {UserId: req.user.id},
-				order: [["createdAt", "DESC"]],
-			});
+			const snippets = await Snippet.find({
+				owner: req.user,
+			}).sort({createdAt: -1});
 			res.status(200).send({snippets: snippets});
 		}
 	} catch (error) {
@@ -73,11 +74,9 @@ snippets.patch("/:id", async (req, res, next) => {
 		else {
 			console.log(req.body);
 			const {language, content} = req.body;
-			const updatedSnippet = await Snippet.update(
-				{content, language},
-				{
-					where: {id: req.params.id, UserId: req.user.id},
-				}
+			const updatedSnippet = await Snippet.findOneAndUpdate(
+				{_id: req.params.id, owner: req.user},
+				{content, language}
 			);
 			res.status(200).send({success: true, updatedSnippet});
 		}

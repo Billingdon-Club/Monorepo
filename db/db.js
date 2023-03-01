@@ -1,10 +1,19 @@
-const path = require("path");
-const {Sequelize} = require("sequelize");
+require("dotenv").config();
+const mongoose = require("mongoose");
+const {ServerApiVersion} = require("mongodb");
 
-const db = new Sequelize({
-	dialect: "sqlite",
-	storage: path.join(__dirname, "snippysnips.sqlite"),
-	logging: false,
-});
+const connection = async () => {
+	try {
+		await mongoose.connect(process.env.MONGO_URI, {
+			useNewUrlParser: true,
+			serverApi: ServerApiVersion.v1,
+		});
+		console.log("connected");
+	} catch (error) {
+		console.log(error);
+	}
+};
 
-module.exports = db;
+connection();
+
+module.exports = connection;

@@ -1,27 +1,21 @@
-const db = require("../db");
-const {Sequelize, Model, DataTypes} = require("sequelize");
+const mongoose = require("mongoose");
 
-class Snippet extends Model {}
-
-Snippet.init(
-	{
-		id: {
-			type: DataTypes.INTEGER,
-			autoIncrement: true,
-			primaryKey: true,
-		},
-		language: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		content: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
+const snippetSchema = new mongoose.Schema({
+	language: {
+		type: String,
+		required: false,
 	},
-	{
-		sequelize: db,
-	}
-);
+	content: {
+		type: String,
+		required: false,
+	},
+	createdAt: {
+		type: Date,
+		required: false,
+	},
+	owner: {type: mongoose.Types.ObjectId, ref: "User"},
+});
+
+const Snippet = mongoose.model("Snippet", snippetSchema);
 
 module.exports = Snippet;
