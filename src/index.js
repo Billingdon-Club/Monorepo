@@ -53,6 +53,10 @@ app.get("/", async (req, res, next) => {
 	}
 });
 
+app.get("/isAdmin", (req, res, next) => {
+	res.json(req.user.role === "admin" ? {isAdmin: true} : {isAdmin: false});
+});
+
 app.post("/callback", (req, res, next) => {
 	res.redirect("/");
 });
