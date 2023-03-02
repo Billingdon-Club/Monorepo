@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "seed": "node db/seedFn.js",
-    "start": "nodemon src"
+    "start": "nodemon src",
+    "test": "jest --watch-all"
   },
   "repository": {
     "type": "git",
@@ -20,18 +21,16 @@
   "homepage": "https://github.com/JoshuaLaurence/snippysnips#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-openid-connect": "^2.12.0",
+    "jest": "^29.4.3",
     "jsonwebtoken": "^9.0.0",
     "lang-detector": "^1.0.6",
     "mongodb": "^5.1.0",
     "mongoose": "^7.0.0",
-    "mongoose-findorcreate": "^3.0.0",
     "nodemon": "^2.0.20",
-    "sequelize": "^6.28.0",
-    "sqlite3": "^5.1.4"
+    "supertest": "^6.3.3"
   },
   "devDependencies": {
     "@faker-js/faker": "^7.6.0",
