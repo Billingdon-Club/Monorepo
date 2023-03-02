@@ -108,3 +108,5 @@ app.use((error, req, res, next) => {
 app.listen(PORT, () => {
 	console.log(`Snippets are ready at port: ${PORT}`);
 });
+
+module.exports = app;

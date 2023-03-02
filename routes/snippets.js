@@ -19,7 +19,9 @@ snippets.get("/all/:pageNum", async (req, res, next) => {
 					.populate("owner")
 					.limit(PAGE_LIMIT * req.params.pageNum)
 					.sort({createdAt: -1});
-				res.status(200).send({snippets: snippets});
+
+				const count = await Snippet.count({});
+				res.status(200).send({snippets: snippets, total: count});
 			}
 		}
 	} catch (error) {
@@ -53,7 +55,7 @@ snippets.delete("/:id", async (req, res, next) => {
 		if (!req.user) throw new Error("No User Found");
 		else {
 			const deleteParams = {_id: req.params.id};
-			if (!req.user.role === "user") {
+			if (req.user.role === "user") {
 				deleteParams["owner"] = req.user;
 			}
 			const deletedSnippet = await Snippet.deleteOne(deleteParams);
@@ -74,7 +76,11 @@ snippets.get("/:pageNum", async (req, res, next) => {
 			})
 				.limit(PAGE_LIMIT * req.params.pageNum)
 				.sort({createdAt: -1});
-			res.status(200).send({snippets: snippets});
+			const count = await Snippet.count({
+				owner: req.user,
+			});
+
+			res.status(200).send({snippets: snippets, total: count});
 		}
 	} catch (error) {
 		console.log(error);
@@ -87,15 +93,20 @@ snippets.patch("/:id", async (req, res, next) => {
 		if (!req.user) throw new Error("No User Found");
 		else {
 			const updateParams = {_id: req.params.id};
-			if (!req.user.role === "user") {
+			if (req.user.role === "user") {
 				updateParams["owner"] = req.user;
 			}
-			console.log(req.body);
+			console.log(req.body, updateParams);
 			const {language, content} = req.body;
-			const updatedSnippet = await Snippet.findOneAndUpdate(updateParams, {
-				content,
-				language,
-			});
+			const updatedSnippet = await Snippet.findOneAndUpdate(
+				updateParams,
+				{
+					content,
+					language,
+				},
+				{new: true}
+			);
+			console.log(updatedSnippet);
 			res.status(200).send({success: true, updatedSnippet});
 		}
 	} catch (error) {
