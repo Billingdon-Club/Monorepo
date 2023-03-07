@@ -63,7 +63,7 @@ app.post("/callback", (req, res, next) => {
 
 app.get("/logout-direct", (req, res) => {
 	res.redirect(
-		`${process.env.ISSUERBASEURL}/v2/logout?client_id=${process.env.CLIENTID}&returnTo=http://localhost:3000/`
+		`${process.env.ISSUERBASEURL}/v2/logout?client_id=${process.env.CLIENTID}&returnTo=${process.env.FRONT_END_URL}/`
 	);
 });
 
