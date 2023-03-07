@@ -21,18 +21,6 @@ const oAuthAuthourizationCheck = async (req, res, next) => {
 					profilePic: req.oidc.user?.picture,
 					role: "user",
 				});
-			// const [user] = await User.findOrCreate(
-			// 	{
-			// 		username: req.oidc.user?.nickname,
-			// 		email: req.oidc.user?.email,
-			// 		name: req.oidc.user?.name,
-			// 		profilePic: req.oidc.user?.picture,
-			// 		role: "user",
-			// 	},
-			// 	function (err, newElement, created) {
-			// 		if (err) console.log(err);
-			// 	}
-			// );
 			console.log(user);
 			next();
 		}
@@ -50,14 +38,19 @@ const JWTAuthenticationCheck = async (req, res, next) => {
 		if (!authHeader) {
 			next();
 		} else {
-			const token = authHeader.split(" ")[1];
-			const retrievedData = jwt.verify(token, process.env.JWT_SECRET);
-			const user = await User.findOne({
-				username: retrievedData.username,
-			}).exec();
-			req.user = user;
-			console.log(retrievedData, user);
-			next();
+			const tokenData = authHeader.split(" ")[1];
+			const [token, frontEndKey] = tokenData.split("//");
+			if (frontEndKey !== process.env.FRONTEND_KEY) {
+				throw new Error("Invalid Front End Key");
+			} else {
+				const retrievedData = jwt.verify(token, process.env.JWT_SECRET);
+				const user = await User.findOne({
+					username: retrievedData.username,
+				}).exec();
+				req.user = user;
+				console.log(retrievedData, user);
+				next();
+			}
 		}
 	} catch (error) {
 		console.log(error);
